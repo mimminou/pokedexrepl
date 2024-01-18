@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 	"fmt"
+	"github.com/mimminou/pokedexrepl/internal/networking"
 	"os"
 	"strings"
 )
@@ -69,7 +70,7 @@ func printHelp() error {
 	return nil
 }
 
-var locationArea LocationArea // this variable holds the current instance of Location area, needed in order to "track" where we are in the pagination
+var locationArea networking.LocationArea // this variable holds the current instance of Location area, needed in order to "track" where we are in the pagination
 
 func mapCmd() error {
 	endpoint := "/location-area"
@@ -78,8 +79,7 @@ func mapCmd() error {
 		return errors.New("Next Area not available")
 	}
 	if locationArea.Next != nil {
-		fmt.Println("Next URL exists")
-		formattedURL, found := strings.CutPrefix(*locationArea.Next, baseURL)
+		formattedURL, found := strings.CutPrefix(*locationArea.Next, networking.BaseURL)
 		if !found {
 			return errors.New("BaseURL not in URL of API call, did the URL change ?")
 		} else {
@@ -87,7 +87,7 @@ func mapCmd() error {
 		}
 	}
 
-	location, err := getLocationAreas(endpoint)
+	location, err := networking.GetLocationAreas(endpoint)
 	if err != nil {
 		fmt.Println(err)
 		return err
@@ -110,14 +110,14 @@ func mapBCmd() error {
 		return errors.New("Previous area not available")
 	}
 
-	formattedURL, found := strings.CutPrefix(*locationArea.Previous, baseURL)
+	formattedURL, found := strings.CutPrefix(*locationArea.Previous, networking.BaseURL)
 	if !found {
 		return errors.New("BaseURL not in URL of API call, did the URL change ?")
 	} else {
 		endpoint = formattedURL
 	}
 
-	location, err := getLocationAreas(endpoint)
+	location, err := networking.GetLocationAreas(endpoint)
 	if err != nil {
 		fmt.Println(err)
 		return err

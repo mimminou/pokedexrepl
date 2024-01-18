@@ -1,4 +1,4 @@
-package main
+package networking
 
 import (
 	"encoding/json"
@@ -9,14 +9,14 @@ import (
 	"time"
 )
 
-var baseURL string = "https://pokeapi.co/api/v2"
+var BaseURL string = "https://pokeapi.co/api/v2"
 
-func getLocationAreas(endpoint string) (LocationArea, error) {
+func GetLocationAreas(endpoint string) (LocationArea, error) {
 	client := http.Client{
 		Timeout: 30 * time.Second,
 	}
 
-	response, err := client.Get(baseURL + endpoint)
+	response, err := client.Get(BaseURL + endpoint)
 	if err != nil {
 		return LocationArea{}, err
 	}
