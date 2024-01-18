@@ -93,6 +93,7 @@ func mapCmd() error {
 		return err
 	}
 	locationArea = location
+
 	for _, area := range locationArea.Results {
 		fmt.Println(area.Name)
 	}
