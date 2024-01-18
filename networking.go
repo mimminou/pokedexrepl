@@ -10,12 +10,12 @@ import (
 )
 
 var baseURL string = "https://pokeapi.co/api/v2"
-var client http.Client = http.Client{
-	Timeout: 30 * time.Second,
-}
 
-func getLocationAreas(client http.Client) (LocationArea, error) {
-	endpoint := "/location-area"
+func getLocationAreas(endpoint string) (LocationArea, error) {
+	client := http.Client{
+		Timeout: 30 * time.Second,
+	}
+
 	response, err := client.Get(baseURL + endpoint)
 	if err != nil {
 		return LocationArea{}, err
@@ -32,14 +32,12 @@ func getLocationAreas(client http.Client) (LocationArea, error) {
 	}
 	//unmarshall needs a pointer to the struct, so I have to create an "instance" of it in order to pass it, GPT says it's because Unmarshal modifies the data in place instead of returning a copy, it's like that for performance reasons
 
-	var locationArea LocationArea
-	marshallingErr := json.Unmarshal(data, &locationArea)
+	var location LocationArea
+	marshallingErr := json.Unmarshal(data, &location)
 	if marshallingErr != nil {
 		return LocationArea{}, marshallingErr
 	}
-
-	return locationArea, nil
-
+	return location, nil
 }
 
 type LocationArea struct {

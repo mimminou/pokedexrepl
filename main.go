@@ -20,11 +20,9 @@ func main() {
 		reader.Scan()
 		input := reader.Text()
 		if len(input) == 0 {
-			fmt.Println("Please enter a valid input")
 			continue
 		}
 		sanitizedInput := sanitize(input)
 		runCommand(sanitizedInput)
-
 	}
 }
