@@ -25,18 +25,18 @@ func init() {
 		},
 		"map": {
 			name:        "map",
-			description: "show next 20 regions in map",
+			description: "shows next 20 regions in map",
 			function:    mapCmd,
 		},
 		"mapb": {
 			name:        "mapb",
-			description: "show previous 20 regions in map",
+			description: "shows previous 20 regions in map",
 			function:    mapBCmd,
 		},
-		"loc": {
-			name:        "loc",
-			description: "checks location area var",
-			function:    checkLocationArea,
+		"explore": {
+			name:        "explore",
+			description: "returns a list of pokemons in a given area",
+			function:    exploreCmd,
 		},
 	}
 }
@@ -53,26 +53,31 @@ func runCommand(input []string) {
 		fmt.Println("command not found")
 		return
 	}
-	val.function()
+	if len(input) < 2 { //check only if 1 arg was passed, nothing more should pass
+		val.function()
+		return
+	}
+	val.function(input[1])
 }
 
 // define command funcions
-func exit() error {
+func exit(...string) error {
 	os.Exit(0)
 	return nil
 }
 
-func printHelp() error {
+func printHelp(...string) error {
 	fmt.Println("")
 	for _, cmd := range commands {
 		fmt.Printf("name : %s  |  description : %s \n", cmd.name, cmd.description)
 	}
+	fmt.Println("")
 	return nil
 }
 
 var locationArea networking.LocationArea // this variable holds the current instance of Location area, needed in order to "track" where we are in the pagination
 
-func mapCmd() error {
+func mapCmd(...string) error {
 	endpoint := "/location-area"
 	if locationArea.Next == nil && locationArea.Count != 0 {
 		fmt.Println("Reached last area, next areas not avaialable")
@@ -100,7 +105,7 @@ func mapCmd() error {
 	return nil
 }
 
-func mapBCmd() error {
+func mapBCmd(...string) error {
 	endpoint := "/location-area"
 	if locationArea.Count == 0 {
 		fmt.Println("No areas loaded, please use the 'map' command first")
@@ -130,8 +135,12 @@ func mapBCmd() error {
 	return nil
 }
 
-func checkLocationArea() error {
-	fmt.Println(locationArea.Count)
+func exploreCmd(area ...string) error {
+	if len(area) == 0 {
+		fmt.Printf("please pass an area param in this format : 'explore area_name' \n")
+		return errors.New("No area specified")
+	}
+	fmt.Printf("you have passed in : %s \n", area[0])
 	return nil
 }
 
@@ -139,5 +148,5 @@ func checkLocationArea() error {
 type command struct {
 	name        string
 	description string
-	function    func() error
+	function    func(...string) error //use variadic because I don't know if the next assignment part is gonig to require further func arg alteration (spoiler, it doesn't)
 }
