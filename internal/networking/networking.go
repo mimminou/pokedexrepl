@@ -99,5 +99,27 @@ func GetLocationAreas(endpoint string) (LocationArea, error) {
 }
 
 func GetPokemon(endpoint string) (Pokemon, error) {
-	return Pokemon{}, nil
+	client := http.Client{
+		Timeout: 30 * time.Second,
+	}
+
+	response, err := client.Get(BaseURL + endpoint)
+	if err != nil {
+		return Pokemon{}, err
+	}
+
+	if response.StatusCode > 399 {
+		return Pokemon{}, errors.New("Bad Request, status code : " + strconv.Itoa(response.StatusCode))
+	}
+	data, err := io.ReadAll(response.Body)
+	defer response.Body.Close()
+	if err != nil {
+		return Pokemon{}, err
+	}
+	var pokemon Pokemon
+	marshallingErr := json.Unmarshal(data, &pokemon)
+	if marshallingErr != nil {
+		return Pokemon{}, marshallingErr
+	}
+	return pokemon, nil
 }
